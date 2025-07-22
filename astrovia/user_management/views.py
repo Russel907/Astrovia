@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from .serializers import SignUpSerializer, PhoneLoginSerializer
 from .models import UserProfile
 from rest_framework.authtoken.models import Token
-
+from testing_1 import chat_with_bot
 
 class SignUpView(APIView):
     def post(self, request):
@@ -40,3 +40,14 @@ class PhoneLoginView(APIView):
             except UserProfile.DoesNotExist:
                 return Response({"error": "Phone number not found"}, status=404)
         return Response(serializer.errors, status=400)
+
+
+
+class ChatBotAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        message = request.data.get("message", "").strip()
+        if not message:
+            return Response({"error": "Message field is required."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        reply = chat_with_bot(message)
+        return Response({"response": reply}, status=status.HTTP_200_OK)
